@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PPFAS FAQ Chatbot - Working Prototype</title>
+    <title>PPFAS FAQ Chatbot - Dashboard Prototype</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- FontAwesome for clean icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Tiny UI CSS -->
     <link rel="stylesheet" href="styles.css">
@@ -16,55 +16,118 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <div class="prototype-container">
-        <!-- Chat Wrapper -->
-        <div class="chat-card">
-            <!-- Header -->
-            <header class="chat-header">
-                <div class="header-left">
-                    <h2><i class="fa-solid fa-robot"></i> PPFAS FAQ Chatbot</h2>
-                    <span class="info-note">Facts-only. No investment advice.</span>
-                </div>
-                <button class="icon-btn" id="openSettingsBtn" title="Set Gemini API Key">
-                    <i class="fa-solid fa-gear"></i>
+    <div class="dashboard-layout">
+        <!-- Sidebar Toggle Hamburger (Mobile only) -->
+        <button class="mobile-toggle" id="mobileToggleBtn" aria-label="Toggle Navigation Menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <!-- Left Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2 class="groww-brand">
+                    <span class="logo-wave"><i class="fa-solid fa-arrow-trend-up"></i></span>
+                    Groww <span class="sub-brand">PPFAS Bot</span>
+                </h2>
+                <button class="close-sidebar-btn" id="closeSidebarBtn" aria-label="Close Navigation Menu">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <!-- Covered Schemes -->
+                <div class="nav-section">
+                    <h3>Covered Schemes</h3>
+                    <ul class="nav-list" id="sidebarSchemes">
+                        <li><button class="nav-btn" data-scheme="Parag Parikh Flexi Cap Fund"><i class="fa-solid fa-chart-line"></i> Flexi Cap</button></li>
+                        <li><button class="nav-btn" data-scheme="Parag Parikh Large Cap Fund"><i class="fa-solid fa-pie-chart"></i> Large Cap</button></li>
+                        <li><button class="nav-btn" data-scheme="Parag Parikh ELSS Tax Saver Fund"><i class="fa-solid fa-shield-halved"></i> ELSS Tax Saver</button></li>
+                        <li><button class="nav-btn" data-scheme="Parag Parikh Conservative Hybrid Fund"><i class="fa-solid fa-scale-balanced"></i> Conservative Hybrid</button></li>
+                        <li><button class="nav-btn" data-scheme="Parag Parikh Liquid Fund"><i class="fa-solid fa-droplet"></i> Liquid Fund</button></li>
+                    </ul>
+                </div>
+
+                <!-- Official Resources -->
+                <div class="nav-section">
+                    <h3>Official Resources</h3>
+                    <ul class="nav-list">
+                        <li><a href="https://ppfas.com/downloads/monthly-factsheets/" target="_blank" class="nav-link"><i class="fa-solid fa-file-invoice"></i> Monthly Factsheets</a></li>
+                        <li><a href="https://amc.ppfas.com/downloads/scheme-information-documents-sids-and-kims/" target="_blank" class="nav-link"><i class="fa-solid fa-file-contract"></i> SIDs & KIMs</a></li>
+                        <li><a href="https://selfinvest.ppfas.com/" target="_blank" class="nav-link"><i class="fa-solid fa-wallet"></i> SelfInvest Portal</a></li>
+                        <li><a href="https://amc.ppfas.com/investor-desk/faqs/" target="_blank" class="nav-link"><i class="fa-solid fa-graduation-cap"></i> Investor FAQs</a></li>
+                    </ul>
+                </div>
+
+                <!-- Guidelines Card -->
+                <div class="nav-section guideline-card">
+                    <h4><i class="fa-solid fa-circle-info"></i> Guidelines</h4>
+                    <p>Factual responses only. Investment advice is strictly refused. Do not share PAN, Aadhaar, account numbers, or OTPs.</p>
+                </div>
+            </nav>
+
+            <!-- Sidebar Footer Controls -->
+            <div class="sidebar-footer">
+                <button class="settings-trigger-btn" id="openSettingsBtn">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </button>
+            </div>
+        </aside>
+
+        <!-- Right Main Chat Area -->
+        <main class="chat-area" id="chatArea">
+            <!-- Chat Header -->
+            <header class="chat-header">
+                <div class="header-status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span class="status-text" id="statusText">Active Session</span>
+                </div>
+                <span class="chat-subtitle">Parag Parikh FAQ Bot</span>
             </header>
 
-            <!-- Chat Area -->
+            <!-- Chat Message Window -->
             <div class="chat-body">
-                <div class="chat-messages" id="chatMessages">
-                    <div class="message system-message">
-                        Welcome! Ask me factual details about PPFAS schemes. I search the web to answer.
+                <div class="chat-container-inner">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message system-message">
+                            Welcome! Search live factual information about Parag Parikh Mutual Fund schemes using the input box below.
+                        </div>
                     </div>
                 </div>
 
                 <!-- Example Questions Stack -->
-                <div class="examples-section" id="examplesSection">
-                    <span class="examples-label">Example Questions:</span>
-                    <div class="example-buttons">
-                        <button class="example-btn" data-query="What is the expense ratio of Parag Parikh Flexi Cap Fund?">
-                            <i class="fa-solid fa-circle-question"></i> Expense ratio of Flexi Cap?
-                        </button>
-                        <button class="example-btn" data-query="What is the lock-in period for Parag Parikh ELSS Tax Saver Fund?">
-                            <i class="fa-solid fa-circle-question"></i> ELSS lock-in?
-                        </button>
-                        <button class="example-btn" data-query="How do I download my PPFAS capital-gains statement?">
-                            <i class="fa-solid fa-circle-question"></i> How to download capital-gains?
-                        </button>
+                <div class="examples-section-container">
+                    <div class="chat-container-inner">
+                        <div class="examples-section" id="examplesSection">
+                            <span class="examples-label">Example Questions</span>
+                            <div class="example-buttons">
+                                <button class="example-btn" data-query="What is the expense ratio of Parag Parikh Flexi Cap Fund?">
+                                    <i class="fa-solid fa-circle-question"></i> Expense ratio of Flexi Cap?
+                                </button>
+                                <button class="example-btn" data-query="What is the lock-in period for Parag Parikh ELSS Tax Saver Fund?">
+                                    <i class="fa-solid fa-circle-question"></i> ELSS lock-in?
+                                </button>
+                                <button class="example-btn" data-query="How do I download my PPFAS capital-gains statement?">
+                                    <i class="fa-solid fa-circle-question"></i> How to download capital-gains?
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Input Form -->
+            <!-- Footer / Search Input -->
             <footer class="chat-footer">
-                <form id="chatForm">
-                    <input type="text" id="userInput" placeholder="Ask a factual question..." autocomplete="off">
-                    <button type="submit" class="send-btn" id="sendBtn">
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </button>
-                </form>
+                <div class="chat-container-inner">
+                    <form id="chatForm">
+                        <input type="text" id="userInput" placeholder="Ask a factual question..." autocomplete="off">
+                        <button type="submit" class="send-btn" id="sendBtn">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                    <div class="footer-terms">Facts-only. Grounded by official PPFAS data.</div>
+                </div>
             </footer>
-        </div>
+        </main>
     </div>
 
     <!-- API Key Drawer Modal -->
