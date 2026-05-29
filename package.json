@@ -1,0 +1,18 @@
+{
+  "name": "faq-chatbot",
+  "version": "1.0.0",
+  "description": "PPFAS Mutual Fund FAQ Chatbot working prototype using Google Search Grounding via Gemini 2.5 Flash.",
+  "main": "app.js",
+  "scripts": {
+    "start": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "mutual-fund",
+    "chatbot",
+    "faq",
+    "gemini",
+    "search-grounding"
+  ],
+  "author": "Abhishek Pillai",
+  "license": "MIT"
+}

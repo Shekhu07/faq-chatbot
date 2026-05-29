@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPFAS FAQ Chatbot - Working Prototype</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for clean icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tiny UI CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Marked.js for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="prototype-container">
+        <!-- Chat Wrapper -->
+        <div class="chat-card">
+            <!-- Header -->
+            <header class="chat-header">
+                <div class="header-left">
+                    <h2><i class="fa-solid fa-robot"></i> PPFAS FAQ Chatbot</h2>
+                    <span class="info-note">Facts-only. No investment advice.</span>
+                </div>
+                <button class="icon-btn" id="openSettingsBtn" title="Set Gemini API Key">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </header>
+
+            <!-- Chat Area -->
+            <div class="chat-body">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message system-message">
+                        Welcome! Ask me factual details about PPFAS schemes. I search the web to answer.
+                    </div>
+                </div>
+
+                <!-- Example Questions Stack -->
+                <div class="examples-section" id="examplesSection">
+                    <span class="examples-label">Example Questions:</span>
+                    <div class="example-buttons">
+                        <button class="example-btn" data-query="What is the expense ratio of Parag Parikh Flexi Cap Fund?">
+                            <i class="fa-solid fa-circle-question"></i> Expense ratio of Flexi Cap?
+                        </button>
+                        <button class="example-btn" data-query="What is the lock-in period for Parag Parikh ELSS Tax Saver Fund?">
+                            <i class="fa-solid fa-circle-question"></i> ELSS lock-in?
+                        </button>
+                        <button class="example-btn" data-query="How do I download my PPFAS capital-gains statement?">
+                            <i class="fa-solid fa-circle-question"></i> How to download capital-gains?
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Form -->
+            <footer class="chat-footer">
+                <form id="chatForm">
+                    <input type="text" id="userInput" placeholder="Ask a factual question..." autocomplete="off">
+                    <button type="submit" class="send-btn" id="sendBtn">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </footer>
+        </div>
+    </div>
+
+    <!-- API Key Drawer Modal -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-key"></i> Gemini API Key Setup</h3>
+                <button class="close-btn" id="closeSettingsBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>This prototype queries Gemini 2.5 Flash with search grounding. Your key is saved locally in your browser.</p>
+                <div class="input-group">
+                    <input type="password" id="apiKeyInput" placeholder="Enter AIzaSy... API Key">
+                </div>
+                <div class="modal-buttons">
+                    <button class="save-btn" id="saveApiKeyBtn">Save Key</button>
+                    <button class="clear-btn" id="clearApiKeyBtn">Clear Key</button>
+                </div>
+                <div class="key-status" id="keyStatus"></div>
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="help-link">
+                    <i class="fa-solid fa-up-right-from-square"></i> Get free Gemini API Key
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
