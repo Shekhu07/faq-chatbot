@@ -584,7 +584,8 @@ Strict Instructions:
             const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
             const footnote = `\n\n<div class="last-updated">Last updated from sources: ${today}</div>`;
             
-            addBotMessage(responseText + footnote, citationUrl, citationTitle, false);
+            const trimmedText = trimToSentences(responseText, 3);
+            addBotMessage(trimmedText + footnote, citationUrl, citationTitle, false);
         }
         
     } catch (error) {
@@ -629,6 +630,14 @@ function escapeHtml(str) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+function trimToSentences(text, maxSentences = 3) {
+    const sentences = text.match(/[^.!?]+[.!?]+(?=\s+[A-Z]|\s*$)/g) || [text];
+    if (sentences.length > maxSentences) {
+        return sentences.slice(0, maxSentences).join("").trim();
+    }
+    return text;
 }
 
 function generateComparisonTable(keys) {
