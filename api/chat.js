@@ -83,8 +83,16 @@ Strict Instructions:
         const textResponse = response.text || "No response generated.";
         const metadata = response.candidates?.[0]?.groundingMetadata || {};
         
+        const d = new Date();
+        const day = String(d.getDate()).padStart(2, '0');
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const month = months[d.getMonth()];
+        const year = d.getFullYear();
+        const formattedDate = `${day} ${month} ${year}`;
+        const finalText = textResponse.trim() + `\n\n_Last updated from sources: ${formattedDate}_`;
+        
         return res.status(200).json({
-            text: textResponse,
+            text: finalText,
             groundingMetadata: metadata
         });
 

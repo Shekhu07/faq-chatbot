@@ -129,6 +129,10 @@ def chat():
             text_response = parts[0].get('text', 'No response generated.') if parts else 'No response generated.'
             metadata = candidate.get('groundingMetadata', {})
             
+            import datetime
+            today = datetime.date.today().strftime("%d %b %Y")
+            text_response = text_response.strip() + f"\n\n_Last updated from sources: {today}_"
+            
             return jsonify({
                 'text': text_response,
                 'groundingMetadata': metadata
