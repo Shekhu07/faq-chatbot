@@ -35,6 +35,18 @@ def check_performance(text):
     returns_regex = re.compile(r'\breturn(s)?\b|\bperformance\b|\bcagr\b|\byield(s)?\b|\bgrowth rate(s)?\b|\bannualized\b|\binterest\b', re.IGNORECASE)
     return bool(returns_regex.search(lowercase_query) and not has_tax_returns)
 
+def is_out_of_scope(text):
+    lowercase = text.lower()
+    greetings = ["hi", "hello", "hey", "greetings", "good morning", "good afternoon", "good evening"]
+    clean_text = re.sub(r'[.,\/#!$%\^&\*;:{}=\-_`~()?]', '', lowercase).strip()
+    if clean_text in greetings:
+        return False
+        
+    mutual_fund_keywords = [
+        "fund", "scheme", "parag", "ppfas", "load", "sip", "expense", "exit", "lock", "cams", "cas", "capital-gains", "statement", "flexi", "large", "elss", "tax saver", "hybrid", "liquid", "arbitrage", "dynamic", "benchmark", "riskometer", "nav", "portfolio", "asset", "amc", "operational", "report", "factsheet", "contact"
+    ]
+    return not any(kw in lowercase for kw in mutual_fund_keywords)
+
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
@@ -55,6 +67,11 @@ def chat():
     if detect_pii(message):
         return jsonify({
             'text': '⚠️ Privacy Warning: Please do not share sensitive personal information (such as PAN, Aadhaar, account numbers, OTPs, emails, or phone numbers). Your request has been blocked for safety.'
+        })
+
+    if is_out_of_scope(message):
+        return jsonify({
+            'text': 'I only answer objective, factual questions about Parag Parikh Mutual Fund schemes (such as expense ratios, exit loads, or statement downloads). This query is outside the scope of this assistant.'
         })
 
     if check_performance(message):
@@ -83,7 +100,8 @@ def chat():
         "3. If the user asks to calculate, compare, or report on mutual fund returns or performance, you must refuse to answer. Direct them to the official PPFAS Monthly Factsheets page at https://ppfas.com/downloads/monthly-factsheets/.\n"
         "4. Limit your factual answers to a maximum of 3 sentences. Be extremely concise, direct, and factual. Do not make any performance claims, compute returns, or compare returns.\n"
         "5. Search and grounding MUST only use official public information sources (e.g. amc.ppfas.com, ppfas.com, sebi.gov.in, amfiindia.com). Do NOT refer to third-party blogs, forums, or unofficial sites. You must not describe or reference any application backend screenshots or designs.\n"
-        "6. Every factual answer must contain a clear reference to the official source."
+        "6. Every factual answer must contain a clear reference to the official source.\n"
+        "7. If the query is not related to Parag Parikh Mutual Fund schemes or standard mutual fund operations (e.g. general knowledge, math, unrelated topics, or other fund houses), you MUST politely refuse to answer. State that you only answer objective factual queries regarding Parag Parikh Mutual Fund schemes."
     )
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"

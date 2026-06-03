@@ -331,6 +331,21 @@ async function handleUserQuery(text) {
         return;
     }
 
+    // 1.2. Greetings Intercept
+    const greetings = ["hi", "hello", "hey", "greetings", "good morning", "good afternoon", "good evening"];
+    const lowercaseClean = text.toLowerCase().trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"");
+    if (greetings.includes(lowercaseClean)) {
+        addBotMessage("Hello! How can I help you with Parag Parikh Mutual Fund scheme facts today?", null, null, false);
+        return;
+    }
+
+    // 1.5. Out of Scope Check (general knowledge, math, chat, etc.)
+    if (isOutOfScope(text)) {
+        const outOfScopeRefusal = "I only answer objective, factual questions about Parag Parikh Mutual Fund schemes (such as expense ratios, exit loads, or statement downloads). This query is outside the scope of this assistant.";
+        addBotMessage(outOfScopeRefusal, null, null, false);
+        return;
+    }
+
     // 2. Returns/Performance check (intercept and route to factsheet)
     const lowercaseQuery = text.toLowerCase();
     const hasTaxReturns = /tax return/i.test(lowercaseQuery);
@@ -743,4 +758,12 @@ function addWelcomeCard(isLive) {
     
     chatMessagesEl.appendChild(cardEl);
     scrollToBottom();
+}
+
+function isOutOfScope(text) {
+    const lowercase = text.toLowerCase();
+    const mutualFundKeywords = [
+        "fund", "scheme", "parag", "ppfas", "load", "sip", "expense", "exit", "lock", "cams", "cas", "capital-gains", "statement", "flexi", "large", "elss", "tax saver", "hybrid", "liquid", "arbitrage", "dynamic", "benchmark", "riskometer", "nav", "portfolio", "asset", "amc", "operational", "report", "factsheet", "contact"
+    ];
+    return !mutualFundKeywords.some(keyword => lowercase.includes(keyword));
 }

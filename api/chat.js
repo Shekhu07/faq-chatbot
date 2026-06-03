@@ -29,6 +29,12 @@ export default async function handler(req, res) {
         });
     }
 
+    if (isOutOfScope(message)) {
+        return res.status(200).json({
+            text: 'I only answer objective, factual questions about Parag Parikh Mutual Fund schemes (such as expense ratios, exit loads, or statement downloads). This query is outside the scope of this assistant.'
+        });
+    }
+
     if (checkPerformance(message)) {
         return res.status(200).json({
             text: 'I do not compute, compare, or display mutual fund performance returns. For official, up-to-date performance figures, benchmarks, and historical returns, please refer to the official PPFAS Monthly Factsheets.',
@@ -61,6 +67,7 @@ Strict Instructions:
 4. Limit your factual answers to a maximum of 3 sentences. Be extremely concise, direct, and factual. Do not make any performance claims, compute returns, or compare returns.
 5. Search and grounding MUST only use official public information sources (e.g. amc.ppfas.com, ppfas.com, sebi.gov.in, amfiindia.com). Do NOT refer to third-party blogs, forums, or unofficial sites. You must not describe or reference any application backend screenshots or designs.
 6. Every factual answer must contain a clear reference to the official source.
+7. If the query is not related to Parag Parikh Mutual Fund schemes or standard mutual fund operations (e.g. general knowledge, math, unrelated topics, or other fund houses), you MUST politely refuse to answer. State that you only answer objective factual queries regarding Parag Parikh Mutual Fund schemes.
 `;
 
         const response = await ai.models.generateContent({
@@ -111,4 +118,17 @@ function checkPerformance(text) {
     const hasTaxReturns = /tax return/i.test(lowercaseQuery);
     const returnsRegex = /\breturn(s)?\b|\bperformance\b|\bcagr\b|\byield(s)?\b|\bgrowth rate(s)?\b|\bannualized\b|\binterest\b/i;
     return returnsRegex.test(lowercaseQuery) && !hasTaxReturns;
+}
+
+function isOutOfScope(text) {
+    const lowercase = text.toLowerCase();
+    const greetings = ["hi", "hello", "hey", "greetings", "good morning", "good afternoon", "good evening"];
+    const cleanText = lowercase.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g,"").trim();
+    if (greetings.includes(cleanText)) {
+        return false;
+    }
+    const mutualFundKeywords = [
+        "fund", "scheme", "parag", "ppfas", "load", "sip", "expense", "exit", "lock", "cams", "cas", "capital-gains", "statement", "flexi", "large", "elss", "tax saver", "hybrid", "liquid", "arbitrage", "dynamic", "benchmark", "riskometer", "nav", "portfolio", "asset", "amc", "operational", "report", "factsheet", "contact"
+    ];
+    return !mutualFundKeywords.some(keyword => lowercase.includes(keyword));
 }
