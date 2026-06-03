@@ -109,6 +109,7 @@ const chatMessagesEl = document.getElementById("chatMessages");
 const chatForm = document.getElementById("chatForm");
 const userInputEl = document.getElementById("userInput");
 const examplesSectionEl = document.getElementById("examplesSection");
+const clearChatBtn = document.getElementById("clearChatBtn");
 
 // No settings elements (API Key strictly handled server-side)
 
@@ -158,6 +159,14 @@ function setupEventListeners() {
         handleUserQuery(text);
         userInputEl.value = "";
     });
+
+    // Clear Chat Click
+    if (clearChatBtn) {
+        clearChatBtn.addEventListener("click", () => {
+            chatMessagesEl.innerHTML = "";
+            addWelcomeCard(isServerKeyActive);
+        });
+    }
 
     // Example Questions Click
     examplesSectionEl.addEventListener("click", (e) => {

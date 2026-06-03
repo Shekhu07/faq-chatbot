@@ -359,6 +359,33 @@ body {
     color: var(--text-muted);
 }
 
+/* Clear Chat Button */
+.clear-chat-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-family: var(--font-body);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clear-chat-btn:hover {
+    background-color: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #f87171;
+}
+
+.clear-chat-btn i {
+    font-size: 0.75rem;
+}
+
 /* Chat Body (Scrollable Stream) */
 .chat-body {
     flex-grow: 1;
@@ -1089,5 +1116,14 @@ body {
     
     .example-buttons {
         grid-template-columns: 1fr; /* Single column stack */
+    }
+}
+
+@media (max-width: 480px) {
+    .clear-chat-btn span {
+        display: none;
+    }
+    .clear-chat-btn {
+        padding: 6px 8px;
     }
 }
