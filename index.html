@@ -17,11 +17,6 @@
 </head>
 <body>
     <div class="dashboard-layout">
-        <!-- Sidebar Toggle Hamburger (Mobile only) -->
-        <button class="mobile-toggle" id="mobileToggleBtn" aria-label="Toggle Navigation Menu">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-
         <!-- Left Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
@@ -71,9 +66,11 @@
 
         <!-- Right Main Chat Area -->
         <main class="chat-area" id="chatArea">
-            <!-- Chat Header -->
             <header class="chat-header">
                 <div class="header-title-container">
+                    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Sidebar">
+                        <i class="fa-solid fa-bars-staggered"></i>
+                    </button>
                     <h1 class="header-title">PPFAS FAQ Assistant</h1>
                     <div class="status-badge" id="statusBadge">
                         <span class="status-dot" id="statusDot"></span>

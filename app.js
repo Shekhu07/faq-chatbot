@@ -115,7 +115,7 @@ const clearChatBtn = document.getElementById("clearChatBtn");
 
 // Sidebar & Mobile Toggle Elements
 const sidebarEl = document.getElementById("sidebar");
-const mobileToggleBtn = document.getElementById("mobileToggleBtn");
+const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
 const closeSidebarBtn = document.getElementById("closeSidebarBtn");
 const sidebarSchemesEl = document.getElementById("sidebarSchemes");
 
@@ -192,9 +192,19 @@ function setupEventListeners() {
         });
     }
 
-    // Mobile Sidebar Toggles
-    if (mobileToggleBtn) {
-        mobileToggleBtn.addEventListener("click", openSidebar);
+    // Sidebar Collapse / Drawer Toggles
+    if (sidebarToggleBtn) {
+        sidebarToggleBtn.addEventListener("click", () => {
+            if (window.innerWidth <= 768) {
+                if (sidebarEl.classList.contains("open")) {
+                    closeSidebar();
+                } else {
+                    openSidebar();
+                }
+            } else {
+                sidebarEl.classList.toggle("collapsed");
+            }
+        });
     }
 
     if (closeSidebarBtn) {
@@ -204,7 +214,7 @@ function setupEventListeners() {
     // Close mobile sidebar when clicking main page content
     document.addEventListener("click", (e) => {
         if (window.innerWidth <= 768 && sidebarEl && sidebarEl.classList.contains("open")) {
-            if (!sidebarEl.contains(e.target) && e.target !== mobileToggleBtn && !mobileToggleBtn.contains(e.target)) {
+            if (!sidebarEl.contains(e.target) && e.target !== sidebarToggleBtn && !sidebarToggleBtn.contains(e.target)) {
                 closeSidebar();
             }
         }
