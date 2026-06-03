@@ -107,7 +107,7 @@ function detectPII(text) {
     const aadhaarRegex = /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/;
     const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
     const phoneRegex = /\b(?:\+?91[\s-]?)?[6-9](?:[\s-]?\d){9}\b/;
-    const accountRegex = /\b\d{9,18}\b/;
+    const accountRegex = /(?:account|acc|folio|bank|ifsc)[\s\W]{0,10}\d{9,18}/i;
     
     const hasOtpKeyword = /otp|one-time password/i.test(text);
     const codeRegex = /\b\d{4,6}\b/;

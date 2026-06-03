@@ -13,7 +13,10 @@ def detect_pii(text):
     aadhaar_regex = re.compile(r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}\b')
     email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b')
     phone_regex = re.compile(r'\b(?:\+?91[\s-]?)?[6-9](?:[\s-]?\d){9}\b')
-    account_regex = re.compile(r'\b\d{9,18}\b')
+    account_regex = re.compile(
+        r'(?:account|acc|folio|bank|ifsc)[\s\W]{0,10}\d{9,18}',
+        re.IGNORECASE
+    )
     
     has_otp_keyword = bool(re.search(r'otp|one-time password', text, re.IGNORECASE))
     has_otp_code = False
