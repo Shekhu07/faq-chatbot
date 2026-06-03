@@ -496,6 +496,15 @@ async function handleUserQuery(text) {
                 return;
             }
             
+            // If no specific scheme matched but they queried a valid scheme metric
+            const metricKeywords = ["sip", "expense", "exit", "lock", "benchmark", "riskometer", "minimum"];
+            const hasMetricKeyword = metricKeywords.some(kw => lowercaseText.includes(kw));
+            if (hasMetricKeyword) {
+                const guidanceMessage = "Please specify which Parag Parikh scheme you are asking about (e.g., *'Minimum SIP of Flexi Cap'* or *'Exit load of Liquid Fund'*). In Offline Demo Mode, I require the scheme name to retrieve details.";
+                addBotMessage(guidanceMessage, null, null, false);
+                return;
+            }
+            
             const fallbackMessage = "This query is not covered in Offline Demo Mode. Live grounded search is currently disabled because the server GEMINI_API_KEY environment variable is not configured.";
             addBotMessage(fallbackMessage, null, null, false);
             
