@@ -10,6 +10,9 @@
   "dependencies": {
     "@google/genai": "latest"
   },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "keywords": [
     "mutual-fund",
     "chatbot",
