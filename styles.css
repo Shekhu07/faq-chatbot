@@ -306,31 +306,51 @@ body {
     align-items: center;
 }
 
-.header-status {
+.header-title-container {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+}
+
+.header-title {
+    font-family: var(--font-header);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
 }
 
 .status-dot {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     background-color: #10b981;
     border-radius: 50%;
     display: inline-block;
-    box-shadow: 0 0 8px #10b981;
+    box-shadow: 0 0 6px #10b981;
     transition: all 0.3s ease;
 }
 
 .status-dot.demo {
     background-color: #f59e0b;
-    box-shadow: 0 0 8px #f59e0b;
+    box-shadow: 0 0 6px #f59e0b;
 }
 
 .status-text {
-    font-size: 0.85rem;
+    font-size: 0.72rem;
     font-weight: 600;
-    color: #fff;
+    color: var(--text-muted);
 }
 
 .chat-subtitle {
@@ -414,29 +434,180 @@ body {
     padding-top: 0.5rem;
 }
 
-/* Table Styling inside bot bubbles */
+/* Glassmorphic/Groww Comparison Tables */
 .message table {
     width: 100%;
-    border-collapse: collapse;
-    margin: 0.8rem 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 1.2rem 0;
     font-size: 0.85rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.01);
 }
 
 .message th {
-    color: var(--text-muted);
+    background-color: var(--bg-input);
+    color: #fff;
     font-weight: 600;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
-    padding: 6px 8px;
+    padding: 10px 12px;
 }
 
 .message td {
-    padding: 6px 8px;
-    border-bottom: 1px dashed var(--border-color);
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    color: var(--text-main);
+    vertical-align: top;
 }
 
 .message tr:last-child td {
     border-bottom: none;
+}
+
+.message tr:hover td {
+    background-color: rgba(0, 208, 156, 0.02);
+}
+
+.message td strong {
+    color: var(--accent);
+}
+
+/* Riskometer Gauge Widget */
+.riskometer-widget {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin: 0.8rem 0;
+}
+
+.riskometer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    font-size: 0.82rem;
+}
+
+.riskometer-title {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.risk-level-name {
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+}
+
+.risk-level-name.low { background-color: rgba(16, 185, 129, 0.15); color: #10b981; }
+.risk-level-name.low-moderate { background-color: rgba(132, 204, 22, 0.15); color: #84cc16; }
+.risk-level-name.moderate { background-color: rgba(234, 179, 8, 0.15); color: #eab308; }
+.risk-level-name.moderately-high { background-color: rgba(249, 115, 22, 0.15); color: #f97316; }
+.risk-level-name.high { background-color: rgba(244, 63, 94, 0.15); color: #f43f5e; }
+.risk-level-name.very-high { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+.riskometer-bar {
+    display: flex;
+    width: 100%;
+    height: 8px;
+    gap: 4px;
+    margin-bottom: 0.4rem;
+}
+
+.risk-segment {
+    flex: 1;
+    height: 100%;
+    border-radius: 2px;
+    opacity: 0.2;
+    transition: all 0.3s ease;
+}
+
+.risk-segment.segment-low { background-color: #10b981; }
+.risk-segment.segment-low-mod { background-color: #84cc16; }
+.risk-segment.segment-moderate { background-color: #eab308; }
+.risk-segment.segment-mod-high { background-color: #f97316; }
+.risk-segment.segment-high { background-color: #f43f5e; }
+.risk-segment.segment-very-high { background-color: #ef4444; }
+
+.risk-segment.active {
+    opacity: 1;
+    box-shadow: 0 0 8px currentColor;
+    transform: scaleY(1.3);
+}
+
+.riskometer-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Scheme Details Card (Offline/Grounded details) */
+.scheme-card {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 0.8rem 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.scheme-card-header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.scheme-card-title {
+    font-family: var(--font-header);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.scheme-card-badge {
+    background-color: var(--accent-glow);
+    color: var(--accent);
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.scheme-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.scheme-grid-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.scheme-grid-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.scheme-grid-value {
+    font-size: 0.88rem;
+    color: var(--text-main);
+    font-weight: 500;
 }
 
 /* Citations inside bot bubbles */
@@ -787,6 +958,96 @@ body {
 .sidebar-nav::-webkit-scrollbar-thumb {
     background: var(--border-color);
     border-radius: 1.5px;
+}
+
+/* Interactive Welcome Card */
+.welcome-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-width: 100%;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    border-left: 4px solid var(--accent);
+}
+
+.welcome-card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 1rem;
+}
+
+.welcome-logo-badge {
+    background: linear-gradient(135deg, var(--accent), #007bf5);
+    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0, 208, 156, 0.2);
+}
+
+.welcome-card-header h3 {
+    font-family: var(--font-header);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+    margin-top: 0;
+}
+
+.welcome-card-header p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.welcome-features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--text-main);
+}
+
+.feature-icon {
+    color: var(--accent);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+.welcome-action-info {
+    background-color: rgba(245, 158, 11, 0.05);
+    border: 1px dashed rgba(245, 158, 11, 0.2);
+    color: var(--text-main);
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.welcome-action-info.live {
+    background-color: rgba(16, 185, 129, 0.05);
+    border: 1px dashed rgba(16, 185, 129, 0.2);
+}
+
+.welcome-action-info strong {
+    color: #fff;
 }
 
 /* ==========================================

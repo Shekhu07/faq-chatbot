@@ -39,21 +39,40 @@ faq-chatbot/
 
 ## ⚙️ Setup & Local Execution
 
-To run this application locally without cross-origin resource sharing (CORS) blockages, serve the files from a web server.
+The chatbot runs on a secure **Zero-Client-Key** architecture. All live grounding API requests are proxied server-side to hide your `GEMINI_API_KEY` from client browsers.
 
-### 1. Launch a Local Web Server
-You can launch a lightweight web server instantly using Python. Open your terminal, navigate to the project directory, and run:
+### 1. Run Locally (Python Flask Proxy)
+Navigate to the project directory, set your environment variable, and start the local server:
 
 ```bash
-cd /Users/abhishekspillai/faq-chatbot
-python3 -m http.server 8000
+export GEMINI_API_KEY="AIzaSyYourActualKey"
+python3 server.py
 ```
+*(On Windows cmd, use `set GEMINI_API_KEY=AIzaSy...` and run `python server.py`)*
 
-### 2. Access the Application
+### 2. Access the Chatbot
 Open your browser and navigate to:
 👉 **`http://localhost:8000`**
 
-### 3. Setup Gemini API Key
-- Get a free API Key from the [Google AI Studio](https://aistudio.google.com/app/apikey).
-- Open the settings modal (clicking the **gear icon** in the chatbot header).
-- Input your key and click **Save Key**.
+- If `GEMINI_API_KEY` is set, the status badge will show **Live Grounded** (routed securely through the server).
+- If no key is set, the application operates in **Demo Mode**, utilizing a local mock database.
+
+---
+
+## 🚀 Deployment (Vercel)
+
+This project is pre-configured for direct, serverless deployment on **Vercel** utilizing the Node.js endpoints inside `/api/` and the static roots configuration.
+
+### Deployment Steps:
+
+1. **Push code to GitHub**: Push this repository to a private (or public) GitHub repository.
+2. **Import to Vercel**:
+   - Go to [Vercel](https://vercel.com/) and click **Add New** → **Project**.
+   - Import your repository.
+3. **Configure Environment Variable (Crucial)**:
+   - Expand the **Environment Variables** section during configuration.
+   - Add a new variable:
+     - **Key**: `GEMINI_API_KEY`
+     - **Value**: `[Your Gemini API Key starting with AIzaSy]`
+4. **Deploy**: Click **Deploy**. Vercel will build the static frontend assets and map the `/api/chat.js` and `/api/status.js` paths to serverless function instances automatically.
+

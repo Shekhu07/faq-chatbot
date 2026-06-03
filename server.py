@@ -6,6 +6,35 @@ from flask import Flask, request, jsonify, send_from_directory
 
 app = Flask(__name__, static_folder='.')
 
+import re
+
+def detect_pii(text):
+    pan_regex = re.compile(r'[A-Z]{5}[0-9]{4}[A-Z]{1}', re.IGNORECASE)
+    aadhaar_regex = re.compile(r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}\b')
+    email_regex = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b')
+    phone_regex = re.compile(r'\b(?:\+?91[\s-]?)?[6-9](?:[\s-]?\d){9}\b')
+    account_regex = re.compile(r'\b\d{9,18}\b')
+    
+    has_otp_keyword = bool(re.search(r'otp|one-time password', text, re.IGNORECASE))
+    has_otp_code = False
+    if has_otp_keyword:
+        has_otp_code = bool(re.search(r'\b\d{4,6}\b', text))
+        
+    return bool(
+        pan_regex.search(text) or
+        aadhaar_regex.search(text) or
+        email_regex.search(text) or
+        phone_regex.search(text) or
+        account_regex.search(text) or
+        has_otp_code
+    )
+
+def check_performance(text):
+    lowercase_query = text.lower()
+    has_tax_returns = "tax return" in lowercase_query
+    returns_regex = re.compile(r'\breturn(s)?\b|\bperformance\b|\bcagr\b|\byield(s)?\b|\bgrowth rate(s)?\b|\bannualized\b|\binterest\b', re.IGNORECASE)
+    return bool(returns_regex.search(lowercase_query) and not has_tax_returns)
+
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
@@ -19,9 +48,27 @@ def status():
 @app.route('/api/chat', methods=['POST'])
 def chat():
     data = request.json or {}
-    message = data.get('message')
+    message = data.get('message', '')
     if not message:
         return jsonify({'error': 'Message is required'}), 400
+
+    if detect_pii(message):
+        return jsonify({
+            'text': '⚠️ Privacy Warning: Please do not share sensitive personal information (such as PAN, Aadhaar, account numbers, OTPs, emails, or phone numbers). Your request has been blocked for safety.'
+        })
+
+    if check_performance(message):
+        return jsonify({
+            'text': 'I do not compute, compare, or display mutual fund performance returns. For official, up-to-date performance figures, benchmarks, and historical returns, please refer to the official PPFAS Monthly Factsheets.',
+            'groundingMetadata': {
+                'groundingChunks': [{
+                    'web': {
+                        'uri': 'https://ppfas.com/downloads/monthly-factsheets/',
+                        'title': 'PPFAS Monthly Factsheets Archive'
+                    }
+                }]
+            }
+        })
 
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key:

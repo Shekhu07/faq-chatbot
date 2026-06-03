@@ -44,6 +44,8 @@
                         <li><button class="nav-btn" data-scheme="Parag Parikh ELSS Tax Saver Fund"><i class="fa-solid fa-shield-halved"></i> ELSS Tax Saver</button></li>
                         <li><button class="nav-btn" data-scheme="Parag Parikh Conservative Hybrid Fund"><i class="fa-solid fa-scale-balanced"></i> Conservative Hybrid</button></li>
                         <li><button class="nav-btn" data-scheme="Parag Parikh Liquid Fund"><i class="fa-solid fa-droplet"></i> Liquid Fund</button></li>
+                        <li><button class="nav-btn" data-scheme="Parag Parikh Arbitrage Fund"><i class="fa-solid fa-arrows-left-right"></i> Arbitrage Fund</button></li>
+                        <li><button class="nav-btn" data-scheme="Parag Parikh Dynamic Asset Allocation Fund"><i class="fa-solid fa-shuffle"></i> Dynamic Asset Allocation</button></li>
                     </ul>
                 </div>
 
@@ -65,33 +67,25 @@
                 </div>
             </nav>
 
-            <!-- Sidebar Footer Controls -->
-            <div class="sidebar-footer">
-                <button class="settings-trigger-btn" id="openSettingsBtn">
-                    <i class="fa-solid fa-gear"></i> Settings
-                </button>
-            </div>
         </aside>
 
         <!-- Right Main Chat Area -->
         <main class="chat-area" id="chatArea">
             <!-- Chat Header -->
             <header class="chat-header">
-                <div class="header-status">
-                    <span class="status-dot" id="statusDot"></span>
-                    <span class="status-text" id="statusText">Active Session</span>
+                <div class="header-title-container">
+                    <h1 class="header-title">PPFAS FAQ Assistant</h1>
+                    <div class="status-badge" id="statusBadge">
+                        <span class="status-dot" id="statusDot"></span>
+                        <span class="status-text" id="statusText">Checking status...</span>
+                    </div>
                 </div>
-                <span class="chat-subtitle">Parag Parikh FAQ Bot</span>
             </header>
 
             <!-- Chat Message Window -->
             <div class="chat-body">
                 <div class="chat-container-inner">
-                    <div class="chat-messages" id="chatMessages">
-                        <div class="message system-message">
-                            Welcome! Search live factual information about Parag Parikh Mutual Fund schemes using the input box below.
-                        </div>
-                    </div>
+                    <div class="chat-messages" id="chatMessages"></div>
                 </div>
 
                 <!-- Example Questions Stack -->
@@ -130,29 +124,7 @@
         </main>
     </div>
 
-    <!-- API Key Drawer Modal -->
-    <div class="settings-modal" id="settingsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-key"></i> Gemini API Key Setup</h3>
-                <button class="close-btn" id="closeSettingsBtn"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="modal-body">
-                <p>This prototype queries Gemini 2.5 Flash with search grounding. Your key is saved locally in your browser.</p>
-                <div class="input-group">
-                    <input type="password" id="apiKeyInput" placeholder="Enter AIzaSy... API Key">
-                </div>
-                <div class="modal-buttons">
-                    <button class="save-btn" id="saveApiKeyBtn">Save Key</button>
-                    <button class="clear-btn" id="clearApiKeyBtn">Clear Key</button>
-                </div>
-                <div class="key-status" id="keyStatus"></div>
-                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="help-link">
-                    <i class="fa-solid fa-up-right-from-square"></i> Get free Gemini API Key
-                </a>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Application Script -->
     <script type="module" src="app.js"></script>

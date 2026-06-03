@@ -1,9 +1,6 @@
-import { GoogleGenAI } from "https://esm.run/@google/genai";
-
 // ==========================================
 // STATE MANAGEMENT & CONFIGURATION
 // ==========================================
-let geminiApiKey = localStorage.getItem("GEMINI_API_KEY") || "";
 let isServerKeyActive = false; // Tracks if server-side GEMINI_API_KEY is configured
 
 // Mock Database for Frictionless Demo Mode
@@ -67,6 +64,26 @@ const MOCK_SCHEME_DB = {
         riskometer: "Low to Moderate Risk",
         benchmark: "CRISIL Liquid Debt A-I Index",
         factsheetUrl: "https://amc.ppfas.com/mutual-funds/parag-parikh-liquid-fund/"
+    },
+    "arbitrage": {
+        name: "Parag Parikh Arbitrage Fund",
+        expenseRatio: "Regular Plan: 0.60%, Direct Plan: 0.30% (as of April 2026)",
+        exitLoad: "0.25% if redeemed within 30 days; Nil after 30 days.",
+        lockIn: "No lock-in period.",
+        minimumSip: "₹1,000",
+        riskometer: "Low Risk",
+        benchmark: "NIFTY 50 Arbitrage Total Return Index",
+        factsheetUrl: "https://amc.ppfas.com/mutual-funds/parag-parikh-arbitrage-fund/"
+    },
+    "dynamic": {
+        name: "Parag Parikh Dynamic Asset Allocation Fund",
+        expenseRatio: "Regular Plan: 0.61%, Direct Plan: 0.35% (as of April 2026)",
+        exitLoad: "1.00% if redeemed within 365 days (for redemptions exceeding 10% of units); Nil after 365 days.",
+        lockIn: "No lock-in period.",
+        minimumSip: "₹1,000",
+        riskometer: "Moderately High Risk",
+        benchmark: "CRISIL Hybrid 50+50 Moderate Index",
+        factsheetUrl: "https://amc.ppfas.com/mutual-funds/parag-parikh-dynamic-asset-allocation-fund/"
     }
 };
 
@@ -93,14 +110,7 @@ const chatForm = document.getElementById("chatForm");
 const userInputEl = document.getElementById("userInput");
 const examplesSectionEl = document.getElementById("examplesSection");
 
-// Settings Modal Elements
-const settingsModal = document.getElementById("settingsModal");
-const openSettingsBtn = document.getElementById("openSettingsBtn");
-const closeSettingsBtn = document.getElementById("closeSettingsBtn");
-const apiKeyInput = document.getElementById("apiKeyInput");
-const saveApiKeyBtn = document.getElementById("saveApiKeyBtn");
-const clearApiKeyBtn = document.getElementById("clearApiKeyBtn");
-const keyStatusEl = document.getElementById("keyStatus");
+// No settings elements (API Key strictly handled server-side)
 
 // Sidebar & Mobile Toggle Elements
 const sidebarEl = document.getElementById("sidebar");
@@ -116,20 +126,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateKeyStatusUI();
     setupEventListeners();
     
-    // Welcome notification indicating active modes
-    if (isServerKeyActive) {
-        setTimeout(() => {
-            addSystemNotification("✅ Operating in Live Grounded Mode. Requests are routed securely through the backend proxy server.");
-        }, 800);
-    } else if (geminiApiKey) {
-        setTimeout(() => {
-            addSystemNotification("✅ Operating in Live Grounded Mode (using client-side key saved in your browser).");
-        }, 800);
-    } else {
-        setTimeout(() => {
-            addSystemNotification("💡 Operating in Offline Demo Mode. You can query the mock database for scheme facts! Click 'Settings' in the sidebar footer to enter your Gemini API Key or configure the server's GEMINI_API_KEY environment variable.");
-        }, 800);
-    }
+    // Render the interactive welcome dashboard card
+    addWelcomeCard(isServerKeyActive);
 });
 
 // Check secure server API status
@@ -150,34 +148,7 @@ async function checkServerStatus() {
 // EVENT LISTENERS
 // ==========================================
 function setupEventListeners() {
-    // Modal toggle
-    openSettingsBtn.addEventListener("click", openSettings);
-    closeSettingsBtn.addEventListener("click", closeSettings);
-    settingsModal.addEventListener("click", (e) => {
-        if (e.target === settingsModal) closeSettings();
-    });
-
-    // API Key Save / Clear
-    saveApiKeyBtn.addEventListener("click", () => {
-        const key = apiKeyInput.value.trim();
-        if (key) {
-            geminiApiKey = key;
-            localStorage.setItem("GEMINI_API_KEY", key);
-            updateKeyStatusUI();
-            addSystemNotification("✅ API Key saved. The chatbot is ready to search!");
-            closeSettings();
-        } else {
-            alert("Please enter a valid API key.");
-        }
-    });
-
-    clearApiKeyBtn.addEventListener("click", () => {
-        geminiApiKey = "";
-        localStorage.removeItem("GEMINI_API_KEY");
-        updateKeyStatusUI();
-        addSystemNotification("🗑️ API Key cleared. Real-time search is disabled.");
-        closeSettings();
-    });
+    // Event listeners for basic chat components
 
     // Form Submit
     chatForm.addEventListener("submit", (e) => {
@@ -246,51 +217,16 @@ function closeSidebar() {
 // ==========================================
 // UI STATUS UPDATE
 // ==========================================
-function openSettings() {
-    settingsModal.classList.add("open");
-}
-
-function closeSettings() {
-    settingsModal.classList.remove("open");
-}
-
 function updateKeyStatusUI() {
     const statusDotEl = document.getElementById("statusDot");
     const statusTextEl = document.getElementById("statusText");
 
     if (isServerKeyActive) {
-        keyStatusEl.className = "key-status active";
-        keyStatusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Server Key Active`;
-        apiKeyInput.value = "";
-        apiKeyInput.placeholder = "Configured securely on server";
-        apiKeyInput.disabled = true;
-        saveApiKeyBtn.disabled = true;
-        clearApiKeyBtn.disabled = true;
-        
         if (statusDotEl) statusDotEl.className = "status-dot";
-        if (statusTextEl) statusTextEl.textContent = "Live Grounded Session";
-    } else if (geminiApiKey) {
-        keyStatusEl.className = "key-status active";
-        keyStatusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> API Key Saved`;
-        apiKeyInput.value = geminiApiKey;
-        apiKeyInput.placeholder = "Enter AIzaSy... API Key";
-        apiKeyInput.disabled = false;
-        saveApiKeyBtn.disabled = false;
-        clearApiKeyBtn.disabled = false;
-        
-        if (statusDotEl) statusDotEl.className = "status-dot";
-        if (statusTextEl) statusTextEl.textContent = "Live Grounded Session (Client)";
+        if (statusTextEl) statusTextEl.textContent = "Live Grounded";
     } else {
-        keyStatusEl.className = "key-status missing";
-        keyStatusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> API Key Missing`;
-        apiKeyInput.value = "";
-        apiKeyInput.placeholder = "Enter AIzaSy... API Key";
-        apiKeyInput.disabled = false;
-        saveApiKeyBtn.disabled = false;
-        clearApiKeyBtn.disabled = false;
-        
         if (statusDotEl) statusDotEl.className = "status-dot demo";
-        if (statusTextEl) statusTextEl.textContent = "Offline Demo Mode";
+        if (statusTextEl) statusTextEl.textContent = "Demo Mode";
     }
 }
 
@@ -341,8 +277,17 @@ function addBotMessage(text, citationUrl = null, citationTitle = null, isRefusal
         `;
     }
     
+    let riskometerHtml = "";
+    if (!text.trim().startsWith("<table") && !isRefusal) {
+        const riskLevel = extractRiskometerRating(text);
+        if (riskLevel) {
+            riskometerHtml = generateRiskometerWidget(riskLevel);
+        }
+    }
+    
     msgEl.innerHTML = `
         <div>${parsedText}</div>
+        ${riskometerHtml}
         ${citationHtml}
     `;
     
@@ -414,6 +359,8 @@ async function handleUserQuery(text) {
         if (lowercaseQuery.includes("elss") || lowercaseQuery.includes("tax saver")) matchedKeys.push("elss");
         if (lowercaseQuery.includes("hybrid") || lowercaseQuery.includes("conservative")) matchedKeys.push("hybrid");
         if (lowercaseQuery.includes("liquid")) matchedKeys.push("liquid");
+        if (lowercaseQuery.includes("arbitrage")) matchedKeys.push("arbitrage");
+        if (lowercaseQuery.includes("dynamic") || lowercaseQuery.includes("asset allocation")) matchedKeys.push("dynamic");
 
         if (matchedKeys.length >= 2) {
             addTypingIndicator();
@@ -432,8 +379,8 @@ async function handleUserQuery(text) {
         }
     }
     
-    // 3. Fallback to Offline Demo Mode if Server Key and Client Key are BOTH missing
-    if (!isServerKeyActive && !geminiApiKey) {
+    // 3. Fallback to Offline Demo Mode if Server Key is missing
+    if (!isServerKeyActive) {
         addTypingIndicator();
         setTimeout(() => {
             removeTypingIndicator();
@@ -469,6 +416,10 @@ async function handleUserQuery(text) {
                 matchedSchemeKey = "hybrid";
             } else if (lowercaseText.includes("liquid")) {
                 matchedSchemeKey = "liquid";
+            } else if (lowercaseText.includes("arbitrage")) {
+                matchedSchemeKey = "arbitrage";
+            } else if (lowercaseText.includes("dynamic") || lowercaseText.includes("asset allocation")) {
+                matchedSchemeKey = "dynamic";
             }
             
             if (matchedSchemeKey) {
@@ -488,7 +439,40 @@ async function handleUserQuery(text) {
                 } else if (lowercaseText.includes("benchmark")) {
                     responseContent = `The benchmark for **${scheme.name}** is the **${scheme.benchmark}**.`;
                 } else {
-                    responseContent = `**${scheme.name}** details:<br>- **Expense Ratio**: ${scheme.expenseRatio}<br>- **Exit Load**: ${scheme.exitLoad}<br>- **Lock-in**: ${scheme.lockIn}<br>- **Minimum SIP**: ${scheme.minimumSip}<br>- **Riskometer**: ${scheme.riskometer}<br>- **Benchmark**: ${scheme.benchmark}`;
+                    responseContent = `
+<div class="scheme-card">
+    <div class="scheme-card-header">
+        <span class="scheme-card-title">${scheme.name}</span>
+        <span class="scheme-card-badge">Scheme Profile</span>
+    </div>
+    <div class="scheme-grid">
+        <div class="scheme-grid-item">
+            <span class="scheme-grid-label">Expense Ratio</span>
+            <span class="scheme-grid-value">${scheme.expenseRatio}</span>
+        </div>
+        <div class="scheme-grid-item">
+            <span class="scheme-grid-label">Minimum SIP</span>
+            <span class="scheme-grid-value">${scheme.minimumSip}</span>
+        </div>
+        <div class="scheme-grid-item">
+            <span class="scheme-grid-label">Exit Load</span>
+            <span class="scheme-grid-value">${scheme.exitLoad}</span>
+        </div>
+        <div class="scheme-grid-item">
+            <span class="scheme-grid-label">Lock-in Period</span>
+            <span class="scheme-grid-value">${scheme.lockIn}</span>
+        </div>
+        <div class="scheme-grid-item" style="grid-column: span 2;">
+            <span class="scheme-grid-label">Benchmark</span>
+            <span class="scheme-grid-value">${scheme.benchmark}</span>
+        </div>
+        <div class="scheme-grid-item" style="grid-column: span 2;">
+            <span class="scheme-grid-label">Riskometer</span>
+            <span class="scheme-grid-value">${scheme.riskometer}</span>
+        </div>
+    </div>
+</div>
+`;
                 }
                 
                 const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -497,7 +481,7 @@ async function handleUserQuery(text) {
                 return;
             }
             
-            const fallbackMessage = "This query is not covered in Offline Demo Mode. Please click the **Settings** button in the sidebar footer and enter a valid **Gemini API Key** to enable live search grounding for any question.";
+            const fallbackMessage = "This query is not covered in Offline Demo Mode. Live grounded search is currently disabled because the server GEMINI_API_KEY environment variable is not configured.";
             addBotMessage(fallbackMessage, null, null, false);
             
         }, 500);
@@ -514,53 +498,23 @@ async function handleUserQuery(text) {
         let responseText = "";
         let metadata = {};
 
-        if (isServerKeyActive) {
-            // Route through secure backend proxy (Production Mode)
-            const response = await fetch("/api/chat", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ message: text })
-            });
+        // Route through secure backend proxy (Production Mode)
+        const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: text })
+        });
 
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error || "Failed to fetch response from server.");
-            }
-
-            const data = await response.json();
-            responseText = data.text || "No response generated.";
-            metadata = data.groundingMetadata || {};
-        } else {
-            // Client-side API key fallback (Developer/Sandbox Mode)
-            const ai = new GoogleGenAI({ apiKey: geminiApiKey });
-            const systemInstruction = `
-You are a highly precise and objective Mutual Fund FAQ Assistant specializing in Parag Parikh Financial Advisory Services (PPFAS) Mutual Fund schemes.
-You answer specific facts about PPFAS schemes (expense ratio, exit load, minimum SIP, lock-in (ELSS), riskometer, benchmark, and statement downloads).
-
-Strict Instructions:
-1. Identify if the query is opinionated, subjective, or asking for investment advice, suggestions to buy/sell (e.g. "Should I buy Flexi Cap?", "Is PPFAS Flexi Cap better than others?", "When to sell PPFAS Liquid?").
-2. If it is an advice or recommendation query, you MUST politely refuse to answer. State that you only provide objective facts and do not offer investment advice or recommendations. Include the text: "For more details on PPFAS mutual fund operations and general guidelines, please review the official educational resources." 
-3. If the user asks to calculate, compare, or report on mutual fund returns or performance, you must refuse to answer. Direct them to the official PPFAS Monthly Factsheets page at https://ppfas.com/downloads/monthly-factsheets/.
-4. Limit your factual answers to a maximum of 3 sentences. Be extremely concise, direct, and factual. Do not make any performance claims, compute returns, or compare returns.
-5. Search and grounding MUST only use official public information sources (e.g. amc.ppfas.com, ppfas.com, sebi.gov.in, amfiindia.com). Do NOT refer to third-party blogs, forums, or unofficial sites. You must not describe or reference any application backend screenshots or designs.
-6. Every factual answer must contain a clear reference to the official source.
-`;
-
-            const response = await ai.models.generateContent({
-                model: "gemini-2.5-flash",
-                contents: text,
-                config: {
-                    systemInstruction: systemInstruction,
-                    tools: [{ googleSearch: {} }],
-                    temperature: 0.1
-                }
-            });
-            
-            responseText = response.text || "No response generated.";
-            metadata = response.candidates?.[0]?.groundingMetadata || {};
+        if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.error || "Failed to fetch response from server.");
         }
+
+        const data = await response.json();
+        responseText = data.text || "No response generated.";
+        metadata = data.groundingMetadata || {};
 
         removeTypingIndicator();
         
@@ -674,4 +628,119 @@ function generateComparisonTable(keys) {
     
     html += `</tbody></table>`;
     return html;
+}
+
+function extractRiskometerRating(text) {
+    const lowercase = text.toLowerCase();
+    if (lowercase.includes("low to moderate")) {
+        return "Low to Moderate";
+    } else if (lowercase.includes("moderately high")) {
+        return "Moderately High";
+    } else if (lowercase.includes("very high")) {
+        return "Very High";
+    } else if (lowercase.includes("low")) {
+        return "Low";
+    } else if (lowercase.includes("moderately") || lowercase.includes("moderate")) {
+        return "Moderate";
+    } else if (lowercase.includes("high")) {
+        return "High";
+    }
+    return null;
+}
+
+function generateRiskometerWidget(riskLevel) {
+    let riskClass = "";
+    let activeIndex = -1;
+    
+    switch (riskLevel) {
+        case "Low":
+            riskClass = "low";
+            activeIndex = 0;
+            break;
+        case "Low to Moderate":
+            riskClass = "low-moderate";
+            activeIndex = 1;
+            break;
+        case "Moderate":
+            riskClass = "moderate";
+            activeIndex = 2;
+            break;
+        case "Moderately High":
+            riskClass = "moderately-high";
+            activeIndex = 3;
+            break;
+        case "High":
+            riskClass = "high";
+            activeIndex = 4;
+            break;
+        case "Very High":
+            riskClass = "very-high";
+            activeIndex = 5;
+            break;
+        default:
+            return "";
+    }
+    
+    return `
+        <div class="riskometer-widget">
+            <div class="riskometer-header">
+                <span class="riskometer-title"><i class="fa-solid fa-gauge-high"></i> Scheme Riskometer</span>
+                <span class="risk-level-name ${riskClass}">${riskLevel}</span>
+            </div>
+            <div class="riskometer-bar">
+                <div class="risk-segment segment-low ${activeIndex === 0 ? 'active' : ''}" style="color: #10b981;"></div>
+                <div class="risk-segment segment-low-mod ${activeIndex === 1 ? 'active' : ''}" style="color: #84cc16;"></div>
+                <div class="risk-segment segment-moderate ${activeIndex === 2 ? 'active' : ''}" style="color: #eab308;"></div>
+                <div class="risk-segment segment-mod-high ${activeIndex === 3 ? 'active' : ''}" style="color: #f97316;"></div>
+                <div class="risk-segment segment-high ${activeIndex === 4 ? 'active' : ''}" style="color: #f43f5e;"></div>
+                <div class="risk-segment segment-very-high ${activeIndex === 5 ? 'active' : ''}" style="color: #ef4444;"></div>
+            </div>
+            <div class="riskometer-labels">
+                <span>Low</span>
+                <span>Moderate</span>
+                <span>Very High</span>
+            </div>
+        </div>
+    `;
+}
+
+function addWelcomeCard(isLive) {
+    const cardEl = document.createElement("div");
+    cardEl.className = "welcome-card";
+    
+    const infoHtml = isLive 
+        ? `<div class="welcome-action-info live">
+             <p>🚀 <strong>Live Grounded Search is active.</strong> Real-time search grounding via Google Search is enabled to retrieve accurate scheme updates.</p>
+           </div>`
+        : `<div class="welcome-action-info">
+             <p>💡 <strong>Demo Sandbox Mode is active.</strong> You can type any query or click a scheme in the left sidebar to pre-fill questions. Offline database mock responses are enabled.</p>
+           </div>`;
+
+    cardEl.innerHTML = `
+        <div class="welcome-card-header">
+            <div class="welcome-logo-badge"><i class="fa-solid fa-circle-nodes"></i></div>
+            <div>
+                <h3>PPFAS FAQ Assistant</h3>
+                <p>Interactive factual guide for Parag Parikh Mutual Fund schemes.</p>
+            </div>
+        </div>
+        <div class="welcome-features">
+            <div class="feature-item">
+                <span class="feature-icon"><i class="fa-solid fa-circle-check"></i></span>
+                <span>Factual queries only (Expense ratio, Minimum SIP, Exit loads, Lock-in)</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                <span>Privacy Safe (All PAN, Aadhaar, accounts, and OTP inputs are blocked)</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon"><i class="fa-solid fa-scale-unbalanced-flip"></i></span>
+                <span>Compliance Intercepts (Investment advice & performance returns are refused)</span>
+            </div>
+        </div>
+        ${infoHtml}
+    `;
+    
+    chatMessagesEl.appendChild(cardEl);
+    scrollToBottom();
 }

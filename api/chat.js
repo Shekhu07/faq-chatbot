@@ -23,6 +23,26 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Message is required' });
     }
 
+    if (detectPII(message)) {
+        return res.status(200).json({
+            text: '⚠️ Privacy Warning: Please do not share sensitive personal information (such as PAN, Aadhaar, account numbers, OTPs, emails, or phone numbers). Your request has been blocked for safety.'
+        });
+    }
+
+    if (checkPerformance(message)) {
+        return res.status(200).json({
+            text: 'I do not compute, compare, or display mutual fund performance returns. For official, up-to-date performance figures, benchmarks, and historical returns, please refer to the official PPFAS Monthly Factsheets.',
+            groundingMetadata: {
+                groundingChunks: [{
+                    web: {
+                        uri: 'https://ppfas.com/downloads/monthly-factsheets/',
+                        title: 'PPFAS Monthly Factsheets Archive'
+                    }
+                }]
+            }
+        });
+    }
+
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
         return res.status(500).json({ error: 'Gemini API Key is not configured on the server environment.' });
@@ -65,4 +85,30 @@ Strict Instructions:
         console.error("Gemini API Backend Error:", error);
         return res.status(500).json({ error: error.message || 'An error occurred on the server.' });
     }
+}
+
+function detectPII(text) {
+    const panRegex = /[A-Z]{5}[0-9]{4}[A-Z]{1}/i;
+    const aadhaarRegex = /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/;
+    const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
+    const phoneRegex = /\b(?:\+?91[\s-]?)?[6-9](?:[\s-]?\d){9}\b/;
+    const accountRegex = /\b\d{9,18}\b/;
+    
+    const hasOtpKeyword = /otp|one-time password/i.test(text);
+    const codeRegex = /\b\d{4,6}\b/;
+    const hasOtpCode = hasOtpKeyword && codeRegex.test(text);
+
+    return panRegex.test(text) || 
+           aadhaarRegex.test(text) || 
+           emailRegex.test(text) || 
+           phoneRegex.test(text) || 
+           accountRegex.test(text) || 
+           hasOtpCode;
+}
+
+function checkPerformance(text) {
+    const lowercaseQuery = text.toLowerCase();
+    const hasTaxReturns = /tax return/i.test(lowercaseQuery);
+    const returnsRegex = /\breturn(s)?\b|\bperformance\b|\bcagr\b|\byield(s)?\b|\bgrowth rate(s)?\b|\bannualized\b|\binterest\b/i;
+    return returnsRegex.test(lowercaseQuery) && !hasTaxReturns;
 }
