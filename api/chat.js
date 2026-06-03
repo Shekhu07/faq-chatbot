@@ -124,7 +124,7 @@ function detectPII(text) {
 function checkPerformance(text) {
     const lowercaseQuery = text.toLowerCase();
     const hasTaxReturns = /tax return/i.test(lowercaseQuery);
-    const returnsRegex = /\breturn(s)?\b|\bperformance\b|\bcagr\b|\byield(s)?\b|\bgrowth rate(s)?\b|\bannualized\b|\binterest\b/i;
+    const returnsRegex = /\breturn(s)?\b|\bperformance\b|\bcagr\b|\byield(s)?\b|\bgrowth rate(s)?\b|\bannualized\b/i;
     return returnsRegex.test(lowercaseQuery) && !hasTaxReturns;
 }
 

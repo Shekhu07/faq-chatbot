@@ -368,7 +368,7 @@ async function handleUserQuery(text) {
     // 2. Returns/Performance check (intercept and route to factsheet)
     const lowercaseQuery = text.toLowerCase();
     const hasTaxReturns = /tax return/i.test(lowercaseQuery);
-    const returnsRegex = /\breturn(s)?\b|\bperformance\b|\bcagr\b|\byield(s)?\b|\bgrowth rate(s)?\b|\bannualized\b|\binterest\b/i;
+    const returnsRegex = /\breturn(s)?\b|\bperformance\b|\bcagr\b|\byield(s)?\b|\bgrowth rate(s)?\b|\bannualized\b/i;
     const isPerformanceRequested = returnsRegex.test(lowercaseQuery) && !hasTaxReturns;
 
     if (isPerformanceRequested) {

@@ -32,7 +32,7 @@ def detect_pii(text):
 def check_performance(text):
     lowercase_query = text.lower()
     has_tax_returns = "tax return" in lowercase_query
-    returns_regex = re.compile(r'\breturn(s)?\b|\bperformance\b|\bcagr\b|\byield(s)?\b|\bgrowth rate(s)?\b|\bannualized\b|\binterest\b', re.IGNORECASE)
+    returns_regex = re.compile(r'\breturn(s)?\b|\bperformance\b|\bcagr\b|\byield(s)?\b|\bgrowth rate(s)?\b|\bannualized\b', re.IGNORECASE)
     return bool(returns_regex.search(lowercase_query) and not has_tax_returns)
 
 def is_out_of_scope(text):
