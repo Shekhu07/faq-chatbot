@@ -1,13 +1,14 @@
 {
   "name": "faq-chatbot",
   "version": "1.0.0",
+  "type": "module",
   "description": "PPFAS Mutual Fund FAQ Chatbot working prototype using Google Search Grounding via Gemini 2.5 Flash.",
   "main": "app.js",
   "scripts": {
     "start": "python3 server.py"
   },
   "dependencies": {
-    "@google/genai": "^0.1.1"
+    "@google/genai": "latest"
   },
   "keywords": [
     "mutual-fund",
