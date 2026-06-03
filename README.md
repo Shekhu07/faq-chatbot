@@ -1,26 +1,24 @@
 # ⚡ Mutual Fund FAQ Chatbot (Working Prototype)
 
-A clean, centered **Tiny UI** working prototype that searches the web in real-time to answer factual questions about Parag Parikh Mutual Fund schemes.
+A clean, Groww-styled dark-themed dashboard prototype that answers factual questions about Parag Parikh Mutual Fund (PPFAS) schemes. 
 
-Built with **HTML, Vanilla CSS, and JavaScript**, it integrates the official **Google Gen AI Client SDK** (`@google/genai`) to enable native **Google Search Grounding** via Gemini 2.5 Flash.
+Built with **HTML, Vanilla CSS, and JavaScript**, it utilizes a **Zero-Client-Key** architecture. Live grounding requests are proxied securely to the server side using the official **Google Gen AI Client SDK** (`@google/genai`) to enable **Google Search Grounding** via Gemini 2.5 Flash, preventing any client-side API key exposure.
 
-## 🧠 Specifications & Rules
+---
 
-- **Factual Queries Only** — Strictly answers factual queries such as:
-  - *"What is the expense ratio of Parag Parikh Flexi Cap Fund?"*
-  - *"What is the lock-in period for PPFAS ELSS Tax Saver?"*
-  - *"What is the minimum SIP of Parag Parikh Liquid Fund?"*
-  - *"What is the exit load of Parag Parikh Flexi Cap?"*
-  - *"What is the riskometer and benchmark of Parag Parikh Conservative Hybrid?"*
-  - *"How do I download my capital-gains statement?"*
-- **One Clear Citation** — Every factual response shows exactly **one clear official citation link** right below the answer bubble.
-- **Refuses Financial Advice** — Strictly refuses investment opinions, portfolio advice, or recommendation queries (e.g. *"Should I buy Parag Parikh Flexi Cap?"*, *"Which fund should I sell?"*) with a polite, facts-only message and a direct link to the **PPFAS Investor FAQs** education page.
-- **Tiny UI** — Features a minimal, card-based interface containing:
-  - Welcome line.
-  - 3 clickable example questions.
-  - A note: *"Facts-only. No investment advice."*
-  - An input bar.
-  - Settings modal for Gemini API Key configuration.
+## 🚀 Key Features
+
+* **Zero-Client-Key Architecture** — Strictly keeps `GEMINI_API_KEY` hidden server-side. No cog buttons, modals, or localStorage writes on the frontend.
+* **Offline Demo Sandbox Mode** — Automatically falls back to an offline mock database if no server API key is configured.
+* **Clear Chat History** — Quick clear button in the header resets the conversation thread and re-renders the interactive dashboard greeting card.
+* **Collapsible Sidebar Layout** — A unified toggle button in the header slides the sidebar in/out on mobile (drawer view) and collapses the panel smoothly on desktop (expanding the chat workspace).
+* **Factual Metric Lookups** — Instant extraction of Expense Ratios, Exit Loads, Lock-in Periods, Minimum SIP, Benchmarks, and Riskometers.
+* **SEBI 6-Stage Riskometer Widget** — Color-coded visual risk gauge widget dynamically rendered inside chat responses.
+* **Side-by-Side Scheme Comparisons** Renders a structured comparison table when queries contain words like `versus`, `vs`, or `compare` matching at least two schemes.
+* **Compliance & Safety Intercepts**:
+  * **PII Detection**: Instantly warns and blocks PAN, Aadhaar, phone numbers, emails, or OTPs client-side.
+  * **Returns/Performance Block**: Refuses CAGR/performance calculations and routes users directly to the official factsheet download page.
+  * **Out-of-Scope Refusal**: Intercepts general knowledge, math (e.g. `2+2`), or chitchat to keep focus purely on PPFAS mutual funds.
 
 ---
 
@@ -28,51 +26,75 @@ Built with **HTML, Vanilla CSS, and JavaScript**, it integrates the official **G
 
 ```
 faq-chatbot/
-├── index.html          # Clean Tiny UI layout and modal setup
-├── styles.css          # Customized scrollbar and dark-themed CSS stylesheet
-├── app.js              # Client-side logic for search grounding, citations, and advice refusals
-├── official_sources.md # Curated list of official AMC/SEBI/AMFI public pages
-└── README.md           # Documentation and running instructions
+├── api/
+│   ├── chat.js            # Vercel serverless Node endpoint for live grounding
+│   └── status.js          # Vercel serverless Node endpoint for API config checks
+├── index.html             # groww-styled dashboard markup with collapsible sidebar
+├── styles.css             # Dark slate styles, layouts, widgets, and responsive breakpoints
+├── app.js                 # Frontend state manager, PII checker, and offline mock database
+├── official_sources.md    # Curated AMC factsheet and policy pages used as RAG source
+├── package.json           # Node configuration and engine definitions
+├── vercel.json            # Deployment routing rules for static frontend & API paths
+├── server.py              # Local Python Flask proxy server
+└── README.md              # Current project documentation
 ```
 
 ---
 
 ## ⚙️ Setup & Local Execution
 
-The chatbot runs on a secure **Zero-Client-Key** architecture. All live grounding API requests are proxied server-side to hide your `GEMINI_API_KEY` from client browsers.
-
 ### 1. Run Locally (Python Flask Proxy)
-Navigate to the project directory, set your environment variable, and start the local server:
+Navigate to the project directory, export your API key, and launch the local server:
 
 ```bash
 export GEMINI_API_KEY="AIzaSyYourActualKey"
 python3 server.py
 ```
-*(On Windows cmd, use `set GEMINI_API_KEY=AIzaSy...` and run `python server.py`)*
+*(On Windows command prompt, use `set GEMINI_API_KEY=AIzaSy...` and run `python server.py`)*
 
 ### 2. Access the Chatbot
 Open your browser and navigate to:
 👉 **`http://localhost:8000`**
 
-- If `GEMINI_API_KEY` is set, the status badge will show **Live Grounded** (routed securely through the server).
-- If no key is set, the application operates in **Demo Mode**, utilizing a local mock database.
+* If `GEMINI_API_KEY` is active, the header shows **Live Grounded** status.
+* If no key is set, it operates in **Demo Mode**, serving structured mock responses offline.
 
 ---
 
-## 🚀 Deployment (Vercel)
+## 💡 Supported Demo Mode Queries
 
-This project is pre-configured for direct, serverless deployment on **Vercel** utilizing the Node.js endpoints inside `/api/` and the static roots configuration.
+While running in **Demo Mode**, you can test the following interactive templates:
 
-### Deployment Steps:
+1. **General Scheme Profiles** (Renders a responsive dashboard card):
+   * *"Tell me about Parag Parikh Flexi Cap"*
+   * *"Details of Parag Parikh Dynamic Asset Allocation"*
+   * *Other supported schemes:* Large Cap, ELSS Tax Saver, Conservative Hybrid, Liquid Fund, Arbitrage Fund.
+2. **Specific Scheme Metrics** (Factual answers):
+   * *"What is the expense ratio of Large Cap?"*
+   * *"Exit load of Arbitrage Fund?"*
+   * *"Lock-in period for ELSS?"*
+   * *"Minimum SIP of Flexi Cap?"*
+   * *"Riskometer of liquid fund"* (renders the visual gauge widget).
+   * *"What is the benchmark of Conservative Hybrid?"*
+3. **Scheme Comparisons** (Renders a comparison table):
+   * *"Flexi vs Liquid"*
+   * *"Compare Large Cap and ELSS"*
+4. **General Operational FAQs**:
+   * *"How do I download my capital-gains statement?"*
+   * *"How to download my account statement?"*
+   * *"PPFAS contact number or email"*
+5. **Boundary & Compliance Tests**:
+   * **Out-of-Scope math/chat**: `"2+2"` or `"who is the prime minister"` (returns a polite refusal).
+   * **Performance/Returns block**: `"What are the returns of Flexi Cap?"` (refuses performance calculations and links to factsheets).
+   * **PII Blocker**: Typing an email address or mobile number (triggers the client warning bubble).
 
-1. **Push code to GitHub**: Push this repository to a private (or public) GitHub repository.
-2. **Import to Vercel**:
-   - Go to [Vercel](https://vercel.com/) and click **Add New** → **Project**.
-   - Import your repository.
-3. **Configure Environment Variable (Crucial)**:
-   - Expand the **Environment Variables** section during configuration.
-   - Add a new variable:
-     - **Key**: `GEMINI_API_KEY`
-     - **Value**: `[Your Gemini API Key starting with AIzaSy]`
-4. **Deploy**: Click **Deploy**. Vercel will build the static frontend assets and map the `/api/chat.js` and `/api/status.js` paths to serverless function instances automatically.
+---
 
+## 🚀 Production Deployment (Vercel)
+
+This project is pre-configured to build static files (`index.html`, `styles.css`, `app.js`) to `@vercel/static` and map backend requests to serverless Node instances inside `/api/` using `vercel.json`.
+
+1. Push your repository to **GitHub**.
+2. Import the project into **Vercel**.
+3. Under **Project Settings** → **Environment Variables**, add `GEMINI_API_KEY`.
+4. Click **Deploy**.
